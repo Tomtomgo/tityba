@@ -1,0 +1,15 @@
+body, html{
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  margin: 0;
+  background: -webkit-radial-gradient(center, ellipse cover, rgba(20,20,20, 1),#000000 100%);
+}
+
+.blue{
+  -webkit-svg-shadow: 0 0 70px rgba(50,50,255,1);
+}
+
+.red{
+  -webkit-svg-shadow: 0 0 70px rgba(255,50,50,1);
+}
