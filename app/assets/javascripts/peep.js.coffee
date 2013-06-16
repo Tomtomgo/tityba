@@ -1,4 +1,4 @@
-class Titypeep
+class Peep
 
   instruments:
     'brom': {ramps: {in:0.01, out:0.01}, osc1Type: 0, osc2Type: 2, mod: 0.2}
@@ -8,9 +8,11 @@ class Titypeep
 
   currentInstrument: 'brom'
 
-  initPeeps: (group, speed) ->
-    console.log("initPeeps")
-    @group = group
+  initPeeps: (speed) ->
+    console.log("Init Peep.")
+    
+    @ba = Tity.Ba
+
     @speed = speed
 
     @context = new webkitAudioContext()
@@ -26,25 +28,24 @@ class Titypeep
 
   initGenerators: ->
 
-    @oscs = {}
+    _.each @ba.group.children, (subGroup) =>
+      _.each subGroup.children, (child) =>
+        child.peepObj = {}
 
-    _.each @group.children, (child) =>
-      @oscs[child.id] = {}
+        child.peepObj['gainVal'] = ((10+child.getBoundingClientRect().height)/290)
 
-      @oscs[child.id]['gainVal'] = ((10+child.getBoundingClientRect().height)/290)
+        child.peepObj['gainNode'] = @context.createGainNode()
+        child.peepObj['gainNode'].gain.value = 0
+        child.peepObj['gainNode'].connect(@outGainNode)
+        
+        child.peepObj['oscNode'] = @context.createOscillator()
+        child.peepObj['oscNode'].type = 0
+        child.peepObj['oscNode'].frequency.value = 0
+        child.peepObj['oscNode'].connect(child.peepObj['gainNode'])
+        child.peepObj['oscNode'].noteOn(0)
 
-      @oscs[child.id]['gainNode'] = @context.createGainNode()
-      @oscs[child.id]['gainNode'].gain.value = 0
-      @oscs[child.id]['gainNode'].connect(@outGainNode)
-      
-      @oscs[child.id]['oscNode'] = @context.createOscillator()
-      @oscs[child.id]['oscNode'].type = 0
-      @oscs[child.id]['oscNode'].frequency.value = 0
-      @oscs[child.id]['oscNode'].connect(@oscs[child.id]['gainNode'])
-      @oscs[child.id]['oscNode'].noteOn(0)
-
-  addGenerator: (child) ->
-
+  setGenerator: (child) ->
+    
     if child.shape == 'square'
       oscType = 2
       gainMul = 0.5
@@ -53,24 +54,19 @@ class Titypeep
       oscType = 0
       gainMul = 1
 
-    @oscs[child.id] = {}
+    child.peepObj = {}
 
-    @oscs[child.id]['gainVal'] = ((10+child.getBoundingClientRect().height)/290)
+    child.peepObj['gainVal'] = ((10+child.getBoundingClientRect().height)/290)
 
-    @oscs[child.id]['gainNode'] = @context.createGainNode()
-    @oscs[child.id]['gainNode'].gain.value = @oscs[child.id]['gainVal']*gainMul
-    @oscs[child.id]['gainNode'].connect(@outGainNode)
+    child.peepObj['gainNode'] = @context.createGainNode()
+    child.peepObj['gainNode'].gain.value = child.peepObj['gainVal']*gainMul
+    child.peepObj['gainNode'].connect(@outGainNode)
     
-    @oscs[child.id]['oscNode'] = @context.createOscillator()
-    @oscs[child.id]['oscNode'].type = oscType
-    @oscs[child.id]['oscNode'].frequency.value = 0
-    @oscs[child.id]['oscNode'].connect(@oscs[child.id]['gainNode'])
-    @oscs[child.id]['oscNode'].noteOn(0)
-
-    console.log(@oscs)
-
-  destroyGenerator: (id) ->
-    delete @oscs[id]
+    child.peepObj['oscNode'] = @context.createOscillator()
+    child.peepObj['oscNode'].type = oscType
+    child.peepObj['oscNode'].frequency.value = 0
+    child.peepObj['oscNode'].connect(child.peepObj['gainNode'])
+    child.peepObj['oscNode'].noteOn(0)
 
   updateGain: (child) ->
 
@@ -80,24 +76,24 @@ class Titypeep
     if child.shape == 'circle'
       gainMul = 1
 
-    @oscs[child.id]['gainVal'] = ((10+child.getBoundingClientRect().height)/290)*gainMul
+    child.peepObj['gainVal'] = ((10+child.getBoundingClientRect().height)/290)*gainMul
 
   play: (index) ->
-    child = @group.children[index]
 
-    y = child.translation.y
+    _.each @ba.group.children[index].children, (child) =>
+      y = child.translation.y
 
-    # set freq
-    @oscs[index]['oscNode'].frequency.value = y*2
+      # set freq
+      child.peepObj['oscNode'].frequency.value = y*2
 
-    # ramp
-    now = @context.currentTime
-    
-    @oscs[index]['gainNode'].gain.cancelScheduledValues(now)
-    @oscs[index]['gainNode'].gain.setValueAtTime(@oscs[index]['gainNode'].gain.value, now)
-    @oscs[index]['gainNode'].gain.linearRampToValueAtTime(@oscs[index]['gainVal'], now + @instruments[@currentInstrument]['ramps']['in'])
-    #@oscs[child.id]['gainNode'].gain.setValueAtTime(@oscs[child.id]['gainNode'].gain.value, now)
-    @oscs[index]['gainNode'].gain.linearRampToValueAtTime(0, now + 1)
+      # ramp
+      now = @context.currentTime
+      
+      child.peepObj['gainNode'].gain.cancelScheduledValues(now)
+      child.peepObj['gainNode'].gain.setValueAtTime(child.peepObj['gainNode'].gain.value, now)
+      child.peepObj['gainNode'].gain.linearRampToValueAtTime(child.peepObj['gainVal'], now + @instruments[@currentInstrument]['ramps']['in'])
+      #child.peepObj['gainNode'].gain.setValueAtTime(child.peepObj['gainNode'].gain.value, now)
+      child.peepObj['gainNode'].gain.linearRampToValueAtTime(0, now + 1)
 
 
   initEffects: ->
@@ -170,4 +166,4 @@ class Titypeep
       @effects[effectName].intensity = v2
 
 $(document).ready ->
-  window.ttp = new Titypeep()
+  Tity.Peep = new Peep()
