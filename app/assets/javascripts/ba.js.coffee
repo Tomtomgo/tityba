@@ -5,7 +5,7 @@ class Ba
   dragging_type: null
   scaling_origin: null
 
-  step_length: 100.0
+  step_length: 250.0
   current_group: 0
   current_step_in_group: 0
   step_order: 'inc'
