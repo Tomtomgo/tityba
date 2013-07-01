@@ -47,7 +47,7 @@ class Peep
   setGenerator: (child) ->
     
     if child.shape == 'square'
-      oscType = 2
+      oscType = 1
       gainMul = 0.5
 
     if child.shape == 'circle'
@@ -79,7 +79,7 @@ class Peep
     child.peepObj['gainVal'] = ((10+child.getBoundingClientRect().height)/290)*gainMul
 
   play: (index) ->
-
+    
     _.each @ba.group.children[index].children, (child) =>
       y = child.translation.y
 

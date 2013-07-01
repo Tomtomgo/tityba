@@ -3,7 +3,16 @@ body, html{
   width: 100%;
   overflow: hidden;
   margin: 0;
-  background: #111; /*-webkit-radial-gradient(center, ellipse cover, rgba(20,20,20, 1),#000000 100%);*/
+  background: #111;
+  color: black;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 1em;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: moz-none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .blue{
@@ -12,4 +21,37 @@ body, html{
 
 .red{
   -webkit-svg-shadow: 0 0 70px rgba(255,50,50,1);
+}
+
+#helpme{
+  color: rgba(255,255,255,1);
+  font-weight: bold;
+  position: absolute;
+  z-index: 100;
+  margin: 5px 0 0 5px;
+  cursor: help;
+}
+
+#wtf{
+  z-index: 100;
+  left:50%;
+  margin-left:-150px;
+  background-color: rgba(255,255,255,0.7);
+  padding: 10px 10px 30px 30px;
+  width: 300px;
+  position: absolute;
+  cursor: pointer;
+  display: none;
+}
+
+.yolo{
+  color: green;
+}
+
+ul,li{
+  list-style-type:none;
+  padding:0px;
+  margin:0px;
+  padding: 0;
+  margin: 0;
 }

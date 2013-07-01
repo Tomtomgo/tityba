@@ -13,10 +13,30 @@ class Interact
     $(window).on('dblclick', @dblClickz)
     $(window).on('keyup', @keyUpEvents)
 
+    $("#wtf").click(->
+      $(@).stop().clearQueue().fadeOut(100))
+
+    $("#helpme").mouseover(->
+      $("#wtf").stop().clearQueue().fadeIn(100))
+
+    $("#helpme").mouseout(->
+      $("#wtf").stop().clearQueue().fadeOut(100))
+
+    $("#helpme").animate({opacity: 0.6}, 5000)
+
   keyUpEvents: (e) =>
-    switch e.keyCode
-      when 27
-        @unhighlight()
+    
+    @unhighlight() if e.keyCode == 27
+    
+    @ba.throttle('+') if e.keyCode == 187 and e.shiftKey
+    @ba.throttle('-') if e.keyCode == 189
+
+    switch String.fromCharCode(e.keyCode)
+      when 'R'
+        if @ba.step_order is 'inc'
+          @ba.step_order = 'random' 
+        else
+          @ba.step_order = 'inc'
 
   unhighlight: () ->
     _.each @ba.group.children, (subGroup) =>
@@ -108,7 +128,7 @@ class Interact
     found = false
 
     _.each @ba.group.children, (subGroup) =>
-      _.each subGroup.children, (child) =>
+      _.each subGroup.children, (child, i) =>
         bound = child.getBoundingClientRect()
 
         center = {
@@ -119,27 +139,38 @@ class Interact
         distance = mouse.distanceTo(center)
         
         if distance < (bound.width/2)
-          
           if child.shape == 'circle'
             newShape = 'square'
           else
             newShape = 'circle'
 
-          newChild = @ba.makeT(newShape, child.translation.x, child.translation.y, child.getBoundingClientRect().height) if not (e.ctrlKey or e.shiftKey)
-
           if not e.shiftKey
             subGroup.remove(child)
-            @ba.group.remove(subGroup) if _.isEmpty(subGroup)
-
-          newChild.addTo(@ba.group) if not (e.ctrlKey or e.shiftKey)
-
-          @ba.updateIds()
-
+            @ba.group.remove(subGroup) if _.isEmpty(subGroup.children)
+          
           if not (e.ctrlKey or e.shiftKey)
+            
+            newChild = @ba.makeT(newShape, child.translation.x, child.translation.y, child.getBoundingClientRect().height)
+
             _.each newChild.children, (child) =>
               Tity.Peep.setGenerator(child)
 
+            if _.size(subGroup.children) > 0
+              _.each newChild.children, (child) -> 
+                child.inHarmon = 1
+                child.addTo(subGroup)
+
+              @ba.updateGroups()
+            else
+              newChild.addTo(@ba.group)
+
+          @ba.updateIds()
+          
           if e.shiftKey
+            _.each @ba.group.children, (subGroup)->
+              _.each subGroup.children, (child) ->
+                child.inHarmon = 0
+
             if child.highlighted
               child.fill = child.originalFill
               child.opacity = 0.2

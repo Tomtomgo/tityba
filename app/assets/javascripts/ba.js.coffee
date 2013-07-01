@@ -5,9 +5,12 @@ class Ba
   dragging_type: null
   scaling_origin: null
 
-  step_length: 400.0
+  step_length: 100.0
   current_group: 0
   current_step_in_group: 0
+  step_order: 'inc'
+
+  harmons: 0
 
   n_children: 0
   ids: []
@@ -61,6 +64,7 @@ class Ba
 
     shape.originalFill = shape.fill
     shape.highlighted = false
+    shape.inHarmon = 0
 
     shapeGroup = @two.makeGroup(shape)
 
@@ -88,10 +92,16 @@ class Ba
 
       @current_group += 1
 
+      if @ids.length > 0
+
+        if @step_order == 'random'
+          flat = _.flatten _.map @ids, (subGroup, i) -> i
+          @current_group = Utility.pickRandom(flat)
+
       if @current_group >= @ids.length
         @current_group = 0
 
-      if @ids.length > 0
+      if @ids.length > 0          
         Tity.Peep.play(@ids[@current_group].id)
 
       @timePast = 0
@@ -109,14 +119,17 @@ class Ba
   updateGroups: ->
     newGroup = @two.makeGroup()
     toRemove = []
+
     _.each @group.children, (subGroup) =>
       _.each subGroup.children, (child) =>
-        if child.highlighted
+        if child.highlighted or child.inHarmon == 1
+          child.inHarmon = 1
           newGroup.add(child)
           subGroup.remove(child)
           toRemove.push(subGroup) if _.isEmpty(subGroup.children)
         else
-          if _.keys(subGroup.children).length > 1
+          if _.size(subGroup.children) > 1
+            child.inHarmon = 0
             subGroup.remove(child)
             @group.add(@two.makeGroup(child))
 
@@ -124,7 +137,15 @@ class Ba
       @group.remove(subGroup)
 
     @group.add(newGroup) if not _.isEmpty(newGroup.children)
+
     @updateIds()
+
+  throttle: (dir) ->
+    if dir == '+'
+      @step_length = Math.max(0.0, @step_length/1.2)
+    
+    if dir == '-'
+      @step_length = Math.min(1000.0, @step_length*1.2)
 
   run: ->
     @two.bind('update', (frameCount) =>
