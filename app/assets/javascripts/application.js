@@ -15,4 +15,5 @@
 
 //= require two.min.js
 
+//= require tuna-master/tuna
 //= require_tree .

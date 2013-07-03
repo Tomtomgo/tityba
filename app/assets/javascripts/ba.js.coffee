@@ -78,7 +78,7 @@ class Ba
       _.each subGroup.children, (child) =>
         if @dragging != child.id
           child.translation.x = child.translation.x + Math.sin((@timePast+child.translation.y)*(child.translation.y/20))
-          child.translation.y = child.translation.y + Math.cos((@timePast+child.translation.y)*(child.translation.y/20))
+          child.translation.y = child.translation.y + Math.sin((@timePast+child.translation.y)*(child.translation.y/20))
 
         if not child.highlighted
           if @ids[@current_group]? and subGroup.id == @ids[@current_group].id

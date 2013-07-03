@@ -37,6 +37,22 @@ class Interact
           @ba.step_order = 'random' 
         else
           @ba.step_order = 'inc'
+      when 'I'
+        instruments = _.keys(Tity.Peep.instruments)
+        currentIndex = instruments.indexOf(Tity.Peep.currentInstrument)
+        console.log(currentIndex)
+        console.log(instruments.length)
+        console.log currentIndex >= instruments.length-1
+        if currentIndex >= instruments.length-1
+          currentIndex = 0
+          console.log('=0')
+          console.log(currentIndex)
+        else
+          currentIndex += 1
+          console.log('+1')
+          console.log(currentIndex)
+        
+        Tity.Peep.setInstrument(instruments[currentIndex])
 
   unhighlight: () ->
     _.each @ba.group.children, (subGroup) =>
