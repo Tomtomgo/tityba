@@ -2,7 +2,7 @@ class Peep
 
   instruments:
     'brom': {ramps: {in:0.01, out:0.01}, oscTypes: {circle: 0, square: 1}, 1, dur: 0.1}
-    'blar': {ramps: {in:0.1, out:0.01}, oscTypes: {circle: 0, square: 2}, dur: 0.4}
+    'blar': {ramps: {in:0.3, out:0.01}, oscTypes: {circle: 0, square: 2}, dur: 0.7}
     'blor': {ramps: {in:0.05, out:0.05}, oscTypes: {circle: 2, square: 3}, dur: 0.1}
     'iep': {ramps: {in:0.001, out:0.01}, oscTypes: {circle: 3, square: 2}, dur: 0.03}
 
@@ -96,7 +96,7 @@ class Peep
       y = child.translation.y
 
       # set freq
-      child.peepObj['oscNode'].frequency.value = y*2
+      child.peepObj['oscNode'].frequency.value = Math.pow(y,1.3)
 
       # ramp
       now = @context.currentTime
